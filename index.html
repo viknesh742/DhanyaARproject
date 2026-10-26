@@ -4,99 +4,221 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AR Space Mission</title>
-
-<!-- A-Frame (3D) and AR.js (marker tracking) -->
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
-
 <style>
   body { margin: 0; overflow: hidden; font-family: system-ui, sans-serif; }
-  #panel {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-    background: rgba(8, 14, 40, 0.9); color: #fff;
-    padding: 16px 14px calc(18px + env(safe-area-inset-bottom));
-    border-radius: 20px 20px 0 0; text-align: center;
-  }
-  #buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  #panel button {
-    margin: 0; padding: 16px 0; border: 0; border-radius: 12px;
-    font-size: 20px; font-weight: 600; background: #2c4a9a; color: #fff;
-  }
-  #panel button.active { background: #f2b134; color: #1a1a1a; }
+  button { border: 0; border-radius: 12px; font-weight: 600; background: #2c4a9a; color: #fff; }
+  button.active { background: #f2b134; color: #1a1a1a; }
+  #tabs { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: grid;
+          grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px;
+          background: rgba(8, 14, 40, 0.88); }
+  #tabs button { padding: 12px 0; font-size: 15px; }
+  #hint { position: fixed; top: 64px; left: 8px; right: 8px; z-index: 10; color: #fff;
+          background: rgba(8, 14, 40, .7); padding: 6px 10px; border-radius: 8px;
+          font-size: 15px; text-align: center; }
+  #panel { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; color: #fff;
+           background: rgba(8, 14, 40, 0.9); text-align: center;
+           padding: 16px 14px calc(18px + env(safe-area-inset-bottom));
+           border-radius: 20px 20px 0 0; }
+  #controls { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  #controls button { padding: 16px 0; font-size: 20px; }
   #title { font-size: 26px; font-weight: 700; margin-top: 14px; }
   #facts { font-size: 18px; margin-top: 6px; line-height: 1.45; }
-  #hint { position: fixed; top: 8px; left: 8px; right: 8px; z-index: 10;
-          color: #fff; background: rgba(8,14,40,.7); padding: 6px 10px;
-          border-radius: 8px; font-size: 16px; text-align: center; }
 </style>
 </head>
-
 <body>
-<div id="hint">Mission 1: Planets. Point the camera at the Hiro marker.</div>
+<div id="tabs">
+  <button onclick="mission(0)">Planets</button>
+  <button onclick="mission(1)">Gravity</button>
+  <button onclick="mission(2)">Navigate</button>
+  <button onclick="mission(3)">Satellite</button>
+</div>
+<div id="hint">Point the camera at the Hiro marker</div>
 
-<a-scene embedded
-         arjs="sourceType: webcam; debugUIEnabled: false;"
-         vr-mode-ui="enabled: false">
-
+<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
   <a-marker preset="hiro">
-    <!-- The planet floats above the marker and spins slowly -->
-    <a-sphere id="planet" position="0 1 0" radius="0.7" color="#2a6fdb"
-              animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear">
-    </a-sphere>
-    <!-- Ring is only visible for Saturn -->
-    <a-ring id="ring" position="0 1 0" rotation="-70 0 0"
-            radius-inner="1" radius-outer="1.6" color="#d9c38a"
-            material="side: double" visible="false"></a-ring>
-  </a-marker>
 
+    <!-- Mission 1: planets -->
+    <a-entity id="m1">
+      <a-sphere id="planet" position="0 1 0" radius="0.7" color="#2a6fdb"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear"></a-sphere>
+      <a-ring id="ring" position="0 1 0" rotation="-70 0 0" radius-inner="1" radius-outer="1.6"
+              color="#d9c38a" material="side: double" visible="false"></a-ring>
+    </a-entity>
+
+    <!-- Mission 2: gravity -->
+    <a-entity id="m2">
+      <a-cylinder position="0 0.2 0" radius="0.6" height="0.04" color="#999"></a-cylinder>
+      <a-sphere id="ball" position="0 1.6 0" radius="0.12" color="#f2b134"></a-sphere>
+    </a-entity>
+
+    <!-- Mission 3: navigation -->
+    <a-entity id="m3">
+      <a-sphere position="0.9 0.3 -0.9" radius="0.3" color="#c1440e"></a-sphere>
+      <a-entity id="ship" position="-0.9 0.3 0.9">
+        <a-entity rotation="-90 0 0">
+          <a-cylinder radius="0.07" height="0.3" color="#eeeeee"></a-cylinder>
+          <a-cone position="0 0.22 0" radius-bottom="0.07" radius-top="0" height="0.16" color="#e63946"></a-cone>
+        </a-entity>
+      </a-entity>
+    </a-entity>
+
+    <!-- Mission 4: satellites -->
+    <a-entity id="m4">
+      <a-sphere position="0 0.8 0" radius="0.25" color="#2a6fdb"></a-sphere>
+      <a-entity id="orbit" position="0 0.8 0">
+        <a-entity id="sat" position="0.5 0 0">
+          <a-box width="0.1" height="0.1" depth="0.1" color="#cccccc"></a-box>
+          <a-box position="0.12 0 0" width="0.14" height="0.02" depth="0.08" color="#2244aa"></a-box>
+          <a-box position="-0.12 0 0" width="0.14" height="0.02" depth="0.08" color="#2244aa"></a-box>
+        </a-entity>
+      </a-entity>
+    </a-entity>
+
+  </a-marker>
   <a-entity camera></a-entity>
 </a-scene>
 
 <div id="panel">
-  <div id="buttons"></div>
+  <div id="controls"></div>
   <div id="title"></div>
   <div id="facts"></div>
 </div>
 
 <script>
-  // Planet data. Edit or add more planets here.
+  var $ = function (id) { return document.getElementById(id); };
+  var cur = 0;
+
+  // ---- Data you can edit ----
   var planets = {
-    Earth:   { color: "#2a6fdb", size: 0.7, ring: false,
-               facts: "Diameter 12,742 km. Day: 24 hours. Gravity: 9.8 m/s²." },
-    Mars:    { color: "#c1440e", size: 0.5, ring: false,
-               facts: "Diameter 6,779 km. Day: 24.6 hours. Gravity: 3.7 m/s²." },
-    Jupiter: { color: "#d8a066", size: 1.0, ring: false,
-               facts: "Diameter about 139,820 km. Day: about 10 hours. Gravity: 24.8 m/s²." },
-    Saturn:  { color: "#e3c88a", size: 0.8, ring: true,
-               facts: "Diameter about 116,460 km. Day: about 10.7 hours. Gravity: 10.4 m/s²." }
+    Earth:   { color: "#2a6fdb", size: 0.7, ring: false, facts: "Diameter 12,742 km. Day: 24 hours. Gravity: 9.8 m/s²." },
+    Mars:    { color: "#c1440e", size: 0.5, ring: false, facts: "Diameter 6,779 km. Day: 24.6 hours. Gravity: 3.7 m/s²." },
+    Jupiter: { color: "#d8a066", size: 1.0, ring: false, facts: "Diameter about 139,820 km. Day: about 10 hours. Gravity: 24.8 m/s²." },
+    Saturn:  { color: "#e3c88a", size: 0.8, ring: true,  facts: "Diameter about 116,460 km. Day: about 10.7 hours. Gravity: 10.4 m/s²." }
   };
+  var G = { Earth: 9.8, Moon: 1.6, Mars: 3.7 };
+  var orbits = [
+    { n: "Low orbit",    alt: "about 400 km",    sp: "7.7 km/s", per: "about 90 minutes", use: "space stations and Earth photos", r: 0.5,  sec: 5 },
+    { n: "Medium orbit", alt: "about 20,200 km", sp: "3.9 km/s", per: "about 12 hours",   use: "GPS navigation",                  r: 0.75, sec: 10 },
+    { n: "High orbit",   alt: "about 35,786 km", sp: "3.1 km/s", per: "24 hours, the same as Earth's spin", use: "TV, weather and communication", r: 1.0, sec: 18 }
+  ];
 
-  var planetEl = document.getElementById("planet");
-  var ringEl = document.getElementById("ring");
-  var buttonsEl = document.getElementById("buttons");
+  // ---- State ----
+  var pName = "Earth", gName = "Earth", oi = 0, ang = 0;
+  var ball = { on: false, t: 0 };
+  var ship = { x: -0.9, z: 0.9, h: 0, on: false };
 
-  function showPlanet(name) {
-    var p = planets[name];
-    planetEl.setAttribute("color", p.color);
-    planetEl.setAttribute("radius", p.size);
-    ringEl.setAttribute("visible", p.ring);
-    document.getElementById("title").textContent = name;
-    document.getElementById("facts").textContent = p.facts;
-    var all = buttonsEl.querySelectorAll("button");
-    for (var i = 0; i < all.length; i++) {
-      all[i].className = all[i].textContent === name ? "active" : "";
-    }
+  // ---- Helpers ----
+  function buttons(list) {
+    var c = $("controls"); c.innerHTML = "";
+    list.forEach(function (b) {
+      var e = document.createElement("button");
+      e.textContent = b[0];
+      if (b[2]) e.className = "active";
+      e.onclick = b[1];
+      c.appendChild(e);
+    });
+  }
+  function text(t, f) { $("title").textContent = t; $("facts").textContent = f; }
+
+  // ---- Mission 1: planets ----
+  function showPlanet() {
+    var p = planets[pName];
+    $("planet").setAttribute("color", p.color);
+    $("planet").setAttribute("radius", p.size);
+    $("ring").setAttribute("visible", p.ring);
+    buttons(Object.keys(planets).map(function (k) {
+      return [k, function () { pName = k; showPlanet(); }, k === pName];
+    }));
+    text(pName, p.facts);
   }
 
-  // Build one button per planet
-  Object.keys(planets).forEach(function (name) {
-    var b = document.createElement("button");
-    b.textContent = name;
-    b.onclick = function () { showPlanet(name); };
-    buttonsEl.appendChild(b);
-  });
+  // ---- Mission 2: gravity ----
+  function resetBall() { ball.on = false; $("ball").setAttribute("position", { x: 0, y: 1.6, z: 0 }); }
+  function showGravity() {
+    resetBall();
+    var g = G[gName];
+    buttons(Object.keys(G).map(function (k) {
+      return [k, function () { gName = k; showGravity(); }, k === gName];
+    }).concat([["Drop ball", function () { resetBall(); ball.t = 0; ball.on = true; }]]));
+    text("Gravity on " + gName,
+         "g = " + g + " m/s². A 50 kg person weighs about " + Math.round(50 * g) + " N here. Press Drop ball to see a 9 m fall.");
+  }
 
-  showPlanet("Earth");
+  // ---- Mission 3: navigation ----
+  function showNav() {
+    ship.x = -0.9; ship.z = 0.9; ship.h = 0; ship.on = false;
+    drawShip();
+    buttons([
+      ["◀ Left",  function () { ship.h -= 15; drawShip(); }],
+      ["Right ▶", function () { ship.h += 15; drawShip(); }],
+      ["Launch",  function () { ship.on = true; }],
+      ["Reset",   showNav]
+    ]);
+    text("Navigate to Mars", "Turn the rocket, then press Launch. You can keep steering in flight. Real missions plan their path in advance and use planets' gravity for a boost.");
+  }
+  function drawShip() {
+    $("ship").setAttribute("position", { x: ship.x, y: 0.3, z: ship.z });
+    $("ship").setAttribute("rotation", { x: 0, y: -ship.h, z: 0 });
+  }
+
+  // ---- Mission 4: satellites ----
+  function showOrbit() {
+    var o = orbits[oi];
+    $("sat").setAttribute("position", { x: o.r, y: 0, z: 0 });
+    buttons(orbits.map(function (x, i) {
+      return [x.n, function () { oi = i; showOrbit(); }, i === oi];
+    }));
+    text(o.n, "Height " + o.alt + ". Speed " + o.sp + ". One orbit takes " + o.per + ". Used for " + o.use + ".");
+  }
+
+  // ---- Mission switching ----
+  function mission(n) {
+    cur = n;
+    ["m1", "m2", "m3", "m4"].forEach(function (id, i) { $(id).setAttribute("visible", i === n); });
+    var tabs = $("tabs").children;
+    for (var i = 0; i < tabs.length; i++) tabs[i].className = (i === n) ? "active" : "";
+    [showPlanet, showGravity, showNav, showOrbit][n]();
+  }
+
+  // ---- Animation loop ----
+  var last = performance.now();
+  function loop(now) {
+    var dt = Math.min((now - last) / 1000, 0.1); last = now;
+
+    if (cur === 1 && ball.on) {
+      var g = G[gName];
+      var d = 0.5 * g * ball.t * ball.t;
+      ball.t += dt;
+      if (d >= 9) {
+        d = 9; ball.on = false;
+        $("facts").textContent = "The 9 m fall took " + Math.sqrt(18 / g).toFixed(1) + " s on " + gName + ". On Earth it takes " + Math.sqrt(18 / 9.8).toFixed(1) + " s.";
+      }
+      $("ball").setAttribute("position", { x: 0, y: 1.6 - 0.14 * d, z: 0 });
+    }
+
+    if (cur === 2 && ship.on) {
+      var a = ship.h * Math.PI / 180;
+      ship.x += Math.sin(a) * 0.5 * dt;
+      ship.z -= Math.cos(a) * 0.5 * dt;
+      drawShip();
+      var dx = ship.x - 0.9, dz = ship.z + 0.9;
+      if (Math.sqrt(dx * dx + dz * dz) < 0.4) {
+        ship.on = false; text("Mission complete!", "You reached Mars. Press Reset to try again.");
+      } else if (Math.abs(ship.x) > 2 || Math.abs(ship.z) > 2) {
+        ship.on = false; text("Lost in space", "You missed Mars. Press Reset and adjust the angle.");
+      }
+    }
+
+    if (cur === 3) {
+      ang += 360 / orbits[oi].sec * dt;
+      $("orbit").setAttribute("rotation", { x: 0, y: ang, z: 0 });
+    }
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener("load", function () { mission(0); requestAnimationFrame(loop); });
 </script>
 </body>
 </html>
