@@ -13,19 +13,21 @@
   body { margin: 0; overflow: hidden; font-family: system-ui, sans-serif; }
   #panel {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-    background: rgba(8, 14, 40, 0.82); color: #fff;
-    padding: 10px 12px 14px; text-align: center;
+    background: rgba(8, 14, 40, 0.9); color: #fff;
+    padding: 16px 14px calc(18px + env(safe-area-inset-bottom));
+    border-radius: 20px 20px 0 0; text-align: center;
   }
+  #buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   #panel button {
-    margin: 3px; padding: 9px 14px; border: 0; border-radius: 8px;
-    font-size: 15px; background: #2c4a9a; color: #fff;
+    margin: 0; padding: 16px 0; border: 0; border-radius: 12px;
+    font-size: 20px; font-weight: 600; background: #2c4a9a; color: #fff;
   }
   #panel button.active { background: #f2b134; color: #1a1a1a; }
-  #title { font-size: 17px; font-weight: 600; margin-top: 6px; }
-  #facts { font-size: 14px; margin-top: 4px; line-height: 1.4; }
+  #title { font-size: 26px; font-weight: 700; margin-top: 14px; }
+  #facts { font-size: 18px; margin-top: 6px; line-height: 1.45; }
   #hint { position: fixed; top: 8px; left: 8px; right: 8px; z-index: 10;
           color: #fff; background: rgba(8,14,40,.7); padding: 6px 10px;
-          border-radius: 8px; font-size: 13px; text-align: center; }
+          border-radius: 8px; font-size: 16px; text-align: center; }
 </style>
 </head>
 
